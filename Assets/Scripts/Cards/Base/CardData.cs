@@ -5,7 +5,7 @@ using UnityEngine;
 public abstract class CardData : ScriptableObject
 {
     public string cardName;
-    [TextArea] public string description;
+    [TextArea] public string cardDescription;
     public int cost;
     public CardType cardType;
     public Sprite cardImage;
