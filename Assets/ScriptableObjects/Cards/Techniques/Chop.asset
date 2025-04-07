@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 32ec009ab19b8724590660ee2356f111, type: 3}
-  m_Name: New Technique Card
+  m_Name: Chop
   m_EditorClassIdentifier: 
   cardName: Chop
   cardDescription: Slice up your enemies with your trusty kichen knife.
