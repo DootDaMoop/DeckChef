@@ -4,6 +4,7 @@ using UnityEngine;
 
 public enum RoomType {
     Start,
+    None,
     Enemy,
     Loot,
     Event,

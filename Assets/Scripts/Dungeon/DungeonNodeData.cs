@@ -6,6 +6,7 @@ using UnityEngine;
 public class DungeonNodeData : ScriptableObject
 {
     public RoomType roomType;
+    public bool isMainNode = true;
     public Vector2Int gridPosition;
     public List<DungeonNodeData> connectedNodes;
 }

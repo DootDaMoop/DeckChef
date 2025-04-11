@@ -8,6 +8,11 @@ public class DungeonNodeUI : MonoBehaviour
     public TextMeshProUGUI nodeRoomTypeText;
 
     public void Setup(DungeonNodeData nodeData) {
-        nodeRoomTypeText.text = nodeData.roomType.ToString();
+        if (nodeRoomTypeText == null) {
+            Debug.LogError("nodeRoomTypeText is not assigned in the inspector.");
+            return;
+        } else {
+            nodeRoomTypeText.text = nodeData.roomType.ToString();
+        }
     }
 }

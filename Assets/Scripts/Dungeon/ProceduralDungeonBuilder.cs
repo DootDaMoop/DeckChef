@@ -9,68 +9,81 @@ public class ProceduralDungeonBuilder : MonoBehaviour
         graph.nodes = new List<DungeonNodeData>();
 
         Dictionary<Vector2Int, DungeonNodeData> occupied = new Dictionary<Vector2Int, DungeonNodeData>();
-        List<Vector2Int> openPositions = new List<Vector2Int>();
+        Vector2Int currentPosition = Vector2Int.zero;
 
-        Vector2Int startPosition = new Vector2Int(0, 0);
-        Vector2Int currentPosition = startPosition;
-
-        var startNode = ScriptableObject.CreateInstance<DungeonNodeData>();
-        startNode.roomType = GetRandomRoomType();
-        startNode.connectedNodes = new List<DungeonNodeData>();
-        startNode.gridPosition = startPosition;
+        // Start node init
+        var startNode = CreateNode(currentPosition, true, RoomType.Start);
         graph.nodes.Add(startNode);
-        occupied[startPosition] = startNode;
-        openPositions.AddRange(GetNeighbors(currentPosition));
+        occupied[currentPosition] = startNode;
+
+        DungeonNodeData previousNode = startNode;
 
         for (int i = 1; i < numRooms; i++) {
-            if (openPositions.Count == 0) {
-                Debug.LogWarning("No more open positions available. Stopping generation.");
-                break;
-            }
+            Vector2Int direction = GetRandomDirection();
+            int pathLength = Random.Range(2,7);
 
-            int randomIndex = Random.Range(0, openPositions.Count);
-            currentPosition = openPositions[randomIndex];
-            openPositions.RemoveAt(randomIndex);
-
-            var newNode = ScriptableObject.CreateInstance<DungeonNodeData>();
-            newNode.roomType = GetRandomRoomType();
-            newNode.connectedNodes = new List<DungeonNodeData>();
-            newNode.gridPosition = currentPosition;
-
-            graph.nodes.Add(newNode);
-            occupied[currentPosition] = newNode;
-
-            var neighbors = GetNeighbors(currentPosition);
-            foreach (var neighbor in neighbors) {
-                if (occupied.TryGetValue(neighbor, out var neighborNode)) {
-                    neighborNode.connectedNodes.Add(newNode);
-                    break;
+            List<DungeonNodeData> pathNodes = new List<DungeonNodeData>();
+            for (int j = 0; j < pathLength; j++) {
+                currentPosition += direction;
+                if (occupied.ContainsKey(currentPosition)) {
+                    continue;
                 }
+
+                var pathNode = CreateNode(currentPosition, false, RoomType.None); // TODO: Path nodes roomtype random later
+                graph.nodes.Add(pathNode);
+                occupied[currentPosition] = pathNode;
+                pathNodes.Add(pathNode);
             }
 
-            foreach (var neighbor in GetNeighbors(currentPosition)) {
-                if (!occupied.ContainsKey(neighbor) && !openPositions.Contains(neighbor)) {
-                    openPositions.Add(neighbor);
-                }
+            currentPosition += direction;
+            if (occupied.ContainsKey(currentPosition)) {
+                continue;
             }
-            
-            Debug.Log($"Room {i}: {newNode.roomType} at {currentPosition}");
+
+            bool isBoss = (i == numRooms - 1);
+            var mainType = isBoss ? RoomType.Boss : GetRandomRoomType();
+            var mainNode = CreateNode(currentPosition, true, mainType);
+            graph.nodes.Add(mainNode);
+            occupied[currentPosition] = mainNode;
+
+            DungeonNodeData lastNode = previousNode;
+            foreach (var path in pathNodes) {
+                lastNode.connectedNodes.Add(path);
+                lastNode = path;
+            }
+            lastNode.connectedNodes.Add(mainNode);
+
+            previousNode = mainNode;
         }
 
         return graph;
     }
 
-    private static RoomType GetRandomRoomType() {
-        RoomType[] roomTypes = (RoomType[])System.Enum.GetValues(typeof(RoomType));
-        return roomTypes[Random.Range(0, roomTypes.Length)];
+    private static DungeonNodeData CreateNode(Vector2Int position, bool isMainNode, RoomType roomType) {
+        var node = ScriptableObject.CreateInstance<DungeonNodeData>();
+        node.gridPosition = position;
+        node.roomType = roomType;
+        node.connectedNodes = new List<DungeonNodeData>();
+        node.isMainNode = isMainNode;
+        return node;
     }
 
-    private static List<Vector2Int> GetNeighbors(Vector2Int position){
-        return new List<Vector2Int> {
-            position + Vector2Int.up,
-            position + Vector2Int.down,
-            position + Vector2Int.left,
-            position + Vector2Int.right
+    private static RoomType GetRandomRoomType() {
+        RoomType[] roomTypes = (RoomType[])System.Enum.GetValues(typeof(RoomType));
+        List<RoomType> validRoomTypes = new List<RoomType>(roomTypes);
+        validRoomTypes.Remove(RoomType.Start);
+        validRoomTypes.Remove(RoomType.Boss);
+        return validRoomTypes[Random.Range(0, validRoomTypes.Count)];
+    }
+
+    private static Vector2Int GetRandomDirection() {
+        List<Vector2Int> directions = new List<Vector2Int> {
+            Vector2Int.up,
+            Vector2Int.down,
+            Vector2Int.left,
+            Vector2Int.right
         };
+
+        return directions[Random.Range(0, directions.Count)];
     }
 }
