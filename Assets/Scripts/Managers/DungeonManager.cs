@@ -15,6 +15,12 @@ public class DungeonManager : MonoBehaviour
     public float mainNodeSize = 50f;
     public float pathNodeSize = 30f;
 
+    [ContextMenu("Generate Dungeon")]
+    public void RegenerateDungeon() {
+        ClearDungeon();
+        dungeonGraphData = ProceduralDungeonBuilder.Generate(numRooms);
+        GenerateDungeon();
+    }
 
     private void Start() {
         dungeonGraphData = ProceduralDungeonBuilder.Generate(numRooms);
@@ -34,6 +40,12 @@ public class DungeonManager : MonoBehaviour
             if (!nodeData.isMainNode) {
                 CreateNodeObject(nodeData);
             }
+        }
+    }
+
+    private void ClearDungeon() {
+        foreach (Transform child in nodeParent) {
+            Destroy(child.gameObject);
         }
     }
     
