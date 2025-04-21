@@ -92,6 +92,14 @@ public class CardManager : MonoBehaviour
         }
     }
 
+    public void AddCardToHand(CardData card) {
+        hand.Add(card);
+
+        GameObject cardUIObject = Instantiate(cardPrefab, handUI.transform);
+        cardUIObject.GetComponent<CardUI>().Initialize(card);
+        Debug.Log("Added transformed card to hand: " + card.cardName);
+    }
+
     public List<CardData> GetHand() {
         return hand;
     }

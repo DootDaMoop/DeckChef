@@ -155,7 +155,7 @@ MonoBehaviour:
   nodePrefab: {fileID: 4949336275066451829, guid: 0c06384da937e3c4fb52de3a04bfa75e, type: 3}
   pathNodePrefab: {fileID: 3898336359372809331, guid: a8b3397318d5a004eb426636a00b9e66, type: 3}
   nodeParent: {fileID: 194429762}
-  mainNodeSize: 30
+  mainNodeSize: 50
   pathNodeSize: 25
 --- !u!4 &103969796
 Transform:
