@@ -28,7 +28,7 @@ public class TurnManager : MonoBehaviour
     public UnityEvent onDefeat;
 
     private CardManager cardManager;
-    private List<EnemyController> activeEnemies = new List<EnemyController>();
+    private List<Enemy> activeEnemies = new List<Enemy>();
 
     private void Awake() {
         if (instance == null) {
@@ -122,7 +122,7 @@ public class TurnManager : MonoBehaviour
 
     private void RefreshEnemyList() {
         activeEnemies.Clear();
-        EnemyController[] enemies = FindObjectsOfType<EnemyController>();
+        Enemy[] enemies = FindObjectsOfType<Enemy>();
 
         foreach (var enemy in enemies) {
             if (enemy.gameObject.activeInHierarchy && enemy.IsAlive()) {
