@@ -89,6 +89,11 @@ public class CardManager : MonoBehaviour
     }
 
     public void PlayCard(CardData card) {
+        if (ActionPointManager.instance != null && !ActionPointManager.instance.HasEnoughActionPoints(card.actionPointCost)) {
+            Debug.Log("Not enough action points to play this card!");
+            return;
+        }
+        
         if (hand.Contains(card)) {
             hand.Remove(card);
             discardPile.Add(card);

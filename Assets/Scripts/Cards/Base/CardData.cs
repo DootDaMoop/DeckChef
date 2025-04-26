@@ -6,7 +6,7 @@ public abstract class CardData : ScriptableObject
 {
     public string cardName;
     [TextArea] public string cardDescription;
-    public int cost;
+    public int actionPointCost = 1;
     public CardType cardType;
     public Sprite cardImage;
 }

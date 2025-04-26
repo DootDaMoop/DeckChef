@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -14,6 +15,7 @@ public enum TurnState {
 public class TurnManager : MonoBehaviour
 {
     public static TurnManager instance;
+    private ActionPointManager actionPointManager;
 
     [Header("Turn Settings")]
     [SerializeField] private TurnState currentTurnState;
@@ -40,7 +42,8 @@ public class TurnManager : MonoBehaviour
 
     private void Start() {
         cardManager = CardManager.instance;
-        //StartCoroutine(StartGame());
+        actionPointManager = ActionPointManager.instance;
+        StartCoroutine(StartBattle());
     }
 
     public IEnumerator StartBattle() {
@@ -61,9 +64,33 @@ public class TurnManager : MonoBehaviour
             cardManager.DrawCard();
         }
 
-        onPlayerTurnStart?.Invoke();
+        if (actionPointManager != null) {
+            actionPointManager.ResetActionPoints();
+        }
 
+        onPlayerTurnStart?.Invoke();
         EnablePlayerControls(true);
+    }
+
+    public void ManualEndPlayerTurn() {
+        if (currentTurnState == TurnState.PlayerTurn) {
+            EndPlayerTurn();
+        }
+    }
+
+    public bool CanPlayCard(CardData card) {
+        if (actionPointManager != null && actionPointManager.HasEnoughActionPoints(card.actionPointCost)) {
+            return true;
+        }
+        return false;
+    }
+
+    public bool UseActionPointsForCard(CardData card) {
+        if (actionPointManager == null) {
+            return true;
+        }
+
+        return actionPointManager.UseActionPoints(card.actionPointCost);
     }
 
     public void EndPlayerTurn() {

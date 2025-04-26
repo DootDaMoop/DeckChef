@@ -80,6 +80,17 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
     public void PlayCardOnEnemy(Enemy enemy) {
         CardData cardData = cardUI.GetCardData();
+
+        if (TurnManager.instance != null && !TurnManager.instance.CanPlayCard(cardData)) {
+            Debug.Log("Cannot play card this turn.");
+            ReturnToHand();
+            return;
+        }
+
+        if(TurnManager.instance != null) {
+            TurnManager.instance.UseActionPointsForCard(cardData);
+        }
+
         enemy.ReceiveCard(cardData);
         CardManager.instance.PlayCard(cardData);
         Destroy(gameObject);
