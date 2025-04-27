@@ -106,6 +106,20 @@ public class Enemy : MonoBehaviour
                 }
             
             TakeDamage(damage, elementType);
+
+            if (card.reusable) {
+                StartCoroutine(ReturnTechniqueCardNextTurn(card));
+            }
+        }
+    }
+
+    private IEnumerator ReturnTechniqueCardNextTurn(TechniqueCard card) {
+        int currentTurnCount = TurnManager.instance.GetPlayerTurnCount();
+
+        yield return new WaitUntil(() => TurnManager.instance.IsPlayerTurn() && TurnManager.instance.GetPlayerTurnCount() > currentTurnCount);
+
+        if (CardManager.instance != null) {
+            CardManager.instance.ReturnTechnniqueCard(card);
         }
     }
 

@@ -10,6 +10,8 @@ public class CardUI : MonoBehaviour, IDropHandler
     public TextMeshProUGUI cardNameText;
     public TextMeshProUGUI cardDescriptionText;
     public Image cardImage;
+    [SerializeField] private GameObject cookingProgressUIOverlay;
+    [SerializeField] private TextMeshProUGUI cookingProgressText;
 
     private CardData cardData;
 
@@ -32,5 +34,13 @@ public class CardUI : MonoBehaviour, IDropHandler
 
     public CardData GetCardData() {
         return cardData;
+    }
+
+    public GameObject GetCookingOverlayUI() {
+        return cookingProgressUIOverlay;
+    }
+
+    public TextMeshProUGUI GetCookingProgressText() {
+        return cookingProgressText;
     }
 }

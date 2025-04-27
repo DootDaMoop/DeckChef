@@ -10,15 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 32ec009ab19b8724590660ee2356f111, type: 3}
-  m_Name: Chop
+  m_Name: Fry
   m_EditorClassIdentifier: 
-  cardName: Chop
-  cardDescription: 'CHOP
-
-'
+  cardName: Fry
+  cardDescription: 
   actionPointCost: 1
   cardType: 2
   cardImage: {fileID: 0}
-  techniqueType: 2
-  cookTime: 1
+  techniqueType: 0
+  cookTime: 2
   reusable: 1

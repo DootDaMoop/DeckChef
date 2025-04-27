@@ -101,14 +101,57 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         CardData targetCardData = targetCard.GetCardData();
 
         if (CardCombinationManager.instance.CanCombine(selectedCardData, targetCardData)) {
-            CardData resultCard = CardCombinationManager.instance.GetCombinationResults(selectedCardData, targetCardData);
-            CardManager.instance.RemoveCardFromHand(selectedCardData);
-            CardManager.instance.RemoveCardFromHand(targetCardData);
-            CardManager.instance.AddCardToHand(resultCard);
-            Destroy(targetCard.gameObject);
-            Destroy(gameObject);
+            if (TurnManager.instance != null && !TurnManager.instance.CanPlayCard(selectedCardData)) {
+                Debug.Log("Not enough Action Points.");
+                ReturnToHand();
+                return;
+            }
+            
+            TurnManager.instance.UseActionPointsForCard(selectedCardData);
+
+            TechniqueCard techniqueCard = null;
+            IngredientCard ingredientCard = null;
+            GameObject ingredientObject = null;
+
+            if (selectedCardData is TechniqueCard && targetCardData is IngredientCard) {
+                techniqueCard = selectedCardData as TechniqueCard;
+                ingredientCard = targetCardData as IngredientCard;
+                ingredientObject = targetCard.gameObject;
+            } else if (targetCardData is TechniqueCard && selectedCardData is IngredientCard) {
+                techniqueCard = targetCardData as TechniqueCard;
+                ingredientCard = selectedCardData as IngredientCard;
+                ingredientObject = gameObject;
+            }
+
+            if (techniqueCard != null && ingredientCard != null) {
+                if (techniqueCard.cookTime > 0) {
+                    CookingProgress cookingProgress = ingredientObject.GetComponent<CookingProgress>();
+                    if (cookingProgress == null) {
+                        cookingProgress = ingredientObject.AddComponent<CookingProgress>();
+                    }
+                    cookingProgress.Initialize(techniqueCard, ingredientCard);
+
+                    if (selectedCardData is TechniqueCard) {
+                        Destroy(gameObject);
+                    } else {
+                        Destroy(targetCard.gameObject);
+                    }
+                } else {
+                    CardData resultCard = CardCombinationManager.instance.GetCombinationResults(techniqueCard, ingredientCard);
+                    CardManager.instance.RemoveCardFromHand(selectedCardData);
+                    CardManager.instance.AddCardToHand(targetCardData);
+                    CardManager.instance.AddCardToHand(resultCard);
+                    
+                    if (techniqueCard.reusable) {
+                        CardManager.instance.ReturnTechnniqueCard(techniqueCard);
+                    }
+
+                    Destroy(targetCard.gameObject);
+                    Destroy(gameObject);
+                }
+            }
         } else {
-            Debug.Log("Cannot combine these cards.");
+            Debug.Log("Cannot combine cards.");
             ReturnToHand();
         }
     }

@@ -6,6 +6,6 @@ using UnityEngine;
 public class TechniqueCard : CardData
 {
     public TechniqueType techniqueType;
-    public int cookTime;
+    public int cookTime = 1;
     public bool reusable = true;
 }

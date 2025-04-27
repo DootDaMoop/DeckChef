@@ -20,6 +20,7 @@ public class TurnManager : MonoBehaviour
     [Header("Turn Settings")]
     [SerializeField] private TurnState currentTurnState;
     [SerializeField] private float turnDelay = 0.5f;
+    private int playerTurnCount = 0;
 
     [Header("Events")]
     public UnityEvent onPlayerTurnStart;
@@ -60,6 +61,7 @@ public class TurnManager : MonoBehaviour
 
     public void StartPlayerTurn() {
         currentTurnState = TurnState.PlayerTurn;
+        playerTurnCount++;
         if (cardManager != null && cardManager.GetHand().Count > 0) {
             cardManager.DrawCard();
         }
@@ -175,5 +177,9 @@ public class TurnManager : MonoBehaviour
 
     public bool IsPlayerTurn() {
         return currentTurnState == TurnState.PlayerTurn;
+    }
+
+    public int GetPlayerTurnCount() {
+        return playerTurnCount;
     }
 }

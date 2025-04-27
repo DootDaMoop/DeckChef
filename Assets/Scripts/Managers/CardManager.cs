@@ -135,6 +135,12 @@ public class CardManager : MonoBehaviour
         }
     }
 
+    public void ReturnTechnniqueCard(TechniqueCard techniqueCard) {
+        GameObject cardUIObject = Instantiate(cardPrefab, techniquesHandUI.transform);
+        cardUIObject.GetComponent<CardUI>().Initialize(techniqueCard);
+        Debug.Log($"Returned technique card to hand: {techniqueCard.cardName}");
+    }
+
     public List<CardData> GetHand() {
         return hand;
     }
