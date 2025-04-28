@@ -10,6 +10,7 @@ public class CardUI : MonoBehaviour, IDropHandler
     public TextMeshProUGUI cardNameText;
     public TextMeshProUGUI cardDescriptionText;
     public Image cardImage;
+    public Image cardFrameImage;
     [SerializeField] private GameObject cookingProgressUIOverlay;
     [SerializeField] private TextMeshProUGUI cookingProgressText;
 
@@ -20,6 +21,7 @@ public class CardUI : MonoBehaviour, IDropHandler
         cardNameText.text = cardData.cardName;
         cardDescriptionText.text = cardData.cardDescription;
         cardImage.sprite = cardData.cardImage;
+        cardFrameImage.sprite = cardData.cardFrame;
     }
 
     public void OnDrop(PointerEventData eventData) {

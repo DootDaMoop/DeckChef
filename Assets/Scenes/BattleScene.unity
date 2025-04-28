@@ -1169,7 +1169,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   startingDeck:
   - {fileID: 11400000, guid: 589af7658d59459459803bb707034f98, type: 2}
-  - {fileID: 11400000, guid: afc80fb60aa56a940921770d1c284419, type: 2}
+  - {fileID: 11400000, guid: 132ebb837fad56e468c0898f6e19a43d, type: 2}
+  - {fileID: 11400000, guid: d732794bed44bff49afd17288775be59, type: 2}
+  - {fileID: 11400000, guid: ad2016704c8e2ef498b28a1ba6881628, type: 2}
+  - {fileID: 11400000, guid: d61fc6290db76254cb0674c5dd08ef39, type: 2}
   maxHandSize: 5
   handUI: {fileID: 124768771}
   cardPrefab: {fileID: 6041629400482011106, guid: 5e1d2249e957fcf4d90fd9b70ae91749, type: 3}

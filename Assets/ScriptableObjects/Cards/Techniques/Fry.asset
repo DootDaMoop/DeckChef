@@ -16,7 +16,7 @@ MonoBehaviour:
   cardDescription: 
   actionPointCost: 1
   cardType: 2
-  cardImage: {fileID: 0}
+  cardImage: {fileID: 21300000, guid: b84ef2ec2b84c3a41b2e7c0d76967e7d, type: 3}
   techniqueType: 0
   cookTime: 2
   reusable: 1
