@@ -16,6 +16,8 @@ MonoBehaviour:
   cardDescription: 
   actionPointCost: 1
   cardType: 0
+  cardAbilityType: 2
   cardImage: {fileID: 0}
+  _cardFrame: {fileID: 0}
   buffType: 0
   buffAmount: 0

@@ -48,10 +48,8 @@ public class CookingProgress : MonoBehaviour
         CardData resultCard = CardCombinationManager.instance.GetCombinationResults(techniqueCard, ingredientCard);
         CardManager.instance.RemoveCardFromHand(ingredientCard);
         CardManager.instance.AddCardToHand(resultCard);
-
-        if (techniqueCard.reusable) {
-            CardManager.instance.ReturnTechnniqueCard(techniqueCard);
-        }
+        CardManager.instance.ReturnTechnniqueCard(techniqueCard);
+        
         Destroy(gameObject);
     }
 

@@ -7,5 +7,4 @@ public class TechniqueCard : CardData
 {
     public TechniqueType techniqueType;
     public int cookTime = 1;
-    public bool reusable = true;
 }

@@ -410,7 +410,7 @@ MonoBehaviour:
   enemyName: Enemy 1
   maxHealth: 100
   currentHealth: 0
-  elementalAffinity: 3
+  tasteAffinity: 0
   baseDamage: 10
   attackDelay: 0.5
   damageTextPrefab: {fileID: 6043181597058240791, guid: 929b3108a9b4d8a4caa84d3b39966e70, type: 3}
@@ -1045,7 +1045,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.6132076, g: 0.6132076, b: 0.6132076, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1

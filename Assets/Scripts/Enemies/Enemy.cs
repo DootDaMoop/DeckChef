@@ -9,7 +9,7 @@ public class Enemy : MonoBehaviour
     [SerializeField] private string enemyName;
     [SerializeField] private int maxHealth = 100;
     [SerializeField] private int currentHealth;
-    [SerializeField] private ElementType elementalAffinity;
+    [SerializeField] private TasteType tasteAffinity;
 
     [Header("Attack Settings")]
     [SerializeField] private int baseDamage;
@@ -22,15 +22,17 @@ public class Enemy : MonoBehaviour
     private Transform playerTarget;
     
     // Element effectiveness matrix
-    private static readonly float[,] elementMultipliers = new float[,] {
-        // Attacking element (Fire, Water, Earth, Air, Neutral) vs defending element
-        //Fire  Water  Earth  Air   Neutral
-        { 1.0f, 0.75f, 1.5f,  1.0f, 1.0f }, // Fire attacking
-        { 1.5f, 1.0f,  1.0f,  0.75f, 1.0f }, // Water attacking
-        { 0.75f, 1.0f, 1.0f,  1.5f, 1.0f },  // Earth attacking
-        { 1.0f, 1.5f, 0.75f,  1.0f, 1.0f },  // Air attacking
-        { 1.0f, 1.0f, 1.0f,   1.0f, 1.0f }   // Neutral attacking
-    };
+    private static readonly float[,] tasteEffectiveness = new float[,] {
+    //            Sweet  Sour   Salty  Bitter Umami  Spicy  Neutral
+    /* Sweet */  { 1.0f, 0.75f, 0.75f, 1.5f,  1.5f,  1.0f,  1.0f },
+    /* Sour */   { 1.5f, 1.0f,  1.5f,  0.75f, 1.0f,  0.75f, 1.0f },
+    /* Salty */  { 1.5f, 0.75f, 1.0f,  0.75f, 1.5f,  1.0f,  1.0f },
+    /* Bitter */ { 0.75f, 1.5f, 1.5f,  1.0f,  0.75f, 1.5f,  1.0f },
+    /* Umami */  { 0.75f, 1.0f, 0.75f, 1.5f,  1.0f,  1.5f,  1.0f },
+    /* Spicy */  { 1.0f, 1.5f,  1.5f,  0.75f, 0.75f, 1.0f,  1.0f },
+    /* Neutral */{ 1.0f, 1.0f,  1.0f,  1.0f,  1.0f,  1.0f,  1.0f }
+};
+
 
     private void Start() {
         currentHealth = maxHealth;
@@ -80,36 +82,28 @@ public class Enemy : MonoBehaviour
     private void HandleTechniqueCard(TechniqueCard card) {
         if (card != null) {
             int damage = 0;
-            ElementType elementType = ElementType.Neutral;
 
+            // TODO: Change how technique cards do damage
             switch (card.techniqueType) {
                 case TechniqueType.Chop:
                     damage = 10;
-                    elementType = ElementType.Neutral;
                     break;
                 case TechniqueType.Fry:
                     damage = 15;
-                    elementType = ElementType.Fire;
                     break;
                 case TechniqueType.Boil:
                     damage = 12;
-                    elementType = ElementType.Water;
                     break;
                 case TechniqueType.Bake:
                     damage = 20;
-                    elementType = ElementType.Fire;
                     break;
                 case TechniqueType.Mix:
                     damage = 8;
-                    elementType = ElementType.Air;
                     break;
                 }
             
-            TakeDamage(damage, elementType);
-
-            if (card.reusable) {
-                StartCoroutine(ReturnTechniqueCardNextTurn(card));
-            }
+            TakeDamage(damage, TasteType.Neutral);
+            StartCoroutine(ReturnTechniqueCardNextTurn(card));
         }
     }
 
@@ -126,20 +120,17 @@ public class Enemy : MonoBehaviour
     private void HandleIngredientCard(IngredientCard card) {
         if (card != null) {
             int damage = 5;
-            ElementType elementType = card.elementType;
+            TasteType tasteType = card.tasteType;
 
-            TakeDamage(damage, elementType);
+            TakeDamage(damage, tasteType);
         }
     }
 
     private void HandleSpiceCard(SpiceCard card) {
         if (card != null) {
             switch (card.buffType) {
-                case BuffType.FireDamage:
-                    TakeDamage(Mathf.RoundToInt(card.buffAmount), ElementType.Fire);
-                    break;
-                case BuffType.Burn: // TODO: make burn and fire damage different or remove one lol
-                    TakeDamage(Mathf.RoundToInt(card.buffAmount), ElementType.Fire);
+                case BuffType.Burn:
+                    TakeDamage(Mathf.RoundToInt(card.buffAmount), TasteType.Spicy);
                     break;
                 default:
                     Debug.LogWarning($"Unknown buff type: {card.buffType} or not implemented yet.");
@@ -149,8 +140,8 @@ public class Enemy : MonoBehaviour
     }
 
 
-    public void TakeDamage(int damage, ElementType elementType = ElementType.Neutral) {
-        int totalDamage = CalculateDamage(damage, elementType);
+    public void TakeDamage(int damage, TasteType tasteType = TasteType.Neutral) {
+        int totalDamage = CalculateDamage(damage, tasteType);
         currentHealth -= totalDamage;
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
 
@@ -163,9 +154,9 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    private int CalculateDamage(int baseDamage, ElementType damageType) {
+    private int CalculateDamage(int baseDamage, TasteType damageType) {
         // Get the appropriate multiplier from the element effectiveness matrix
-        float multiplier = elementMultipliers[(int)damageType, (int)elementalAffinity];
+        float multiplier = tasteEffectiveness[(int)damageType, (int)tasteAffinity];
         return Mathf.RoundToInt(baseDamage * multiplier);
     }
 
@@ -209,7 +200,7 @@ public class Enemy : MonoBehaviour
 
     [ContextMenu("Test Enemy Take Damage")]
     public void TestTakeDamage() {
-        TakeDamage(15, ElementType.Fire);
+        TakeDamage(15, TasteType.Sweet);
         Debug.Log($"{enemyName} took 15 Fire damage! Current health: {currentHealth}");
     }
 }

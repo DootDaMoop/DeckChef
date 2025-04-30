@@ -141,10 +141,7 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
                     CardManager.instance.RemoveCardFromHand(selectedCardData);
                     CardManager.instance.AddCardToHand(targetCardData);
                     CardManager.instance.AddCardToHand(resultCard);
-                    
-                    if (techniqueCard.reusable) {
-                        CardManager.instance.ReturnTechnniqueCard(techniqueCard);
-                    }
+                    CardManager.instance.ReturnTechnniqueCard(techniqueCard);
 
                     Destroy(targetCard.gameObject);
                     Destroy(gameObject);
