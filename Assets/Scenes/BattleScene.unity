@@ -1112,8 +1112,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   currentTurnState: 0
   turnDelay: 0.5
-  victoryScreen: {fileID: 0}
-  defeatScreen: {fileID: 0}
+  victoryScreen: {fileID: 1629727146}
+  defeatScreen: {fileID: 1175706347}
   endGameDelay: 2
   mainMenuSceneName: MainMenu
   dungeonSceneName: Dungeon
