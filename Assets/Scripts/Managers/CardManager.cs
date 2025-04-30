@@ -19,25 +19,38 @@ public class CardManager : MonoBehaviour
     public GameObject handUI;
     public GameObject cardPrefab;
 
+    [Header("Technique Cards")]
+    public List<CardData> availableTechniquesCards = new List<CardData>();
+    public GameObject techniquesHandUI;
+
     private void Awake() {
-        if (instance == null)
-        {
+        if (instance == null) {
             instance = this;
-        }
-        else
-        {
+        } else {
             Destroy(gameObject);
         }
     }
 
     private void Start() {
         InitializeDeck();
+        InitializeTechniqueCards();
         DrawStartingHand();
     }
 
     public void InitializeDeck() {
         drawPile = new List<CardData>(startingDeck);
         Shuffle(drawPile);
+    }
+
+    public void InitializeTechniqueCards() {
+        if (techniquesHandUI != null && availableTechniquesCards.Count > 0) {
+            foreach (var techCard in availableTechniquesCards) {
+                if (techCard.cardType == CardType.Technique) {
+                    GameObject cardUIObject = Instantiate(cardPrefab, techniquesHandUI.transform);
+                    cardUIObject.GetComponent<CardUI>().Initialize(techCard);
+                }
+            }
+        }
     }
 
     public void DrawStartingHand() {
@@ -49,9 +62,7 @@ public class CardManager : MonoBehaviour
 
     public void DrawCard() {
         if (drawPile.Count == 0) {
-            drawPile = new List<CardData>(discardPile);
-            discardPile.Clear();
-            Shuffle(drawPile);
+            RefreshDrawPile();
         }
 
         if (drawPile.Count == 0) {
@@ -59,13 +70,15 @@ public class CardManager : MonoBehaviour
             return;
         }
 
+        if (hand.Count >= maxHandSize) {
+            Debug.Log("Hand is full! Cannot draw more cards.");
+            return;
+        }
+
         CardData drawnCard = drawPile[0];
         drawPile.RemoveAt(0);
-        hand.Add(drawnCard);
+        AddCardToHand(drawnCard);
         Debug.Log("Drew card: " + drawnCard.cardName);
-        
-        GameObject cardUIObject = Instantiate(cardPrefab, handUI.transform);
-        cardUIObject.GetComponent<CardUI>().Initialize(drawnCard);
     }
 
     private void Shuffle(List<CardData> list) {
@@ -76,6 +89,11 @@ public class CardManager : MonoBehaviour
     }
 
     public void PlayCard(CardData card) {
+        if (ActionPointManager.instance != null && !ActionPointManager.instance.HasEnoughActionPoints(card.actionPointCost)) {
+            Debug.Log("Not enough action points to play this card!");
+            return;
+        }
+        
         if (hand.Contains(card)) {
             hand.Remove(card);
             discardPile.Add(card);
@@ -98,6 +116,29 @@ public class CardManager : MonoBehaviour
         GameObject cardUIObject = Instantiate(cardPrefab, handUI.transform);
         cardUIObject.GetComponent<CardUI>().Initialize(card);
         Debug.Log("Added transformed card to hand: " + card.cardName);
+    }
+
+    // Yes this is different from DiscardCard()
+    public void RemoveCardFromHand(CardData card) {
+        if (hand.Contains(card)) {
+            hand.Remove(card);
+            Debug.Log("Removed card from hand: " + card.cardName);
+        }
+    }
+
+    public void RefreshDrawPile() {
+        if (discardPile.Count > 0) {
+            drawPile = new List<CardData>(discardPile);
+            discardPile.Clear();
+            Shuffle(drawPile);
+            Debug.Log("Refreshed draw pile from discard pile.");
+        }
+    }
+
+    public void ReturnTechnniqueCard(TechniqueCard techniqueCard) {
+        GameObject cardUIObject = Instantiate(cardPrefab, techniquesHandUI.transform);
+        cardUIObject.GetComponent<CardUI>().Initialize(techniqueCard);
+        Debug.Log($"Returned technique card to hand: {techniqueCard.cardName}");
     }
 
     public List<CardData> GetHand() {

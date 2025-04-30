@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -14,10 +15,12 @@ public enum TurnState {
 public class TurnManager : MonoBehaviour
 {
     public static TurnManager instance;
+    private ActionPointManager actionPointManager;
 
     [Header("Turn Settings")]
     [SerializeField] private TurnState currentTurnState;
     [SerializeField] private float turnDelay = 0.5f;
+    private int playerTurnCount = 0;
 
     [Header("Events")]
     public UnityEvent onPlayerTurnStart;
@@ -28,7 +31,7 @@ public class TurnManager : MonoBehaviour
     public UnityEvent onDefeat;
 
     private CardManager cardManager;
-    private List<EnemyController> activeEnemies = new List<EnemyController>();
+    private List<Enemy> activeEnemies = new List<Enemy>();
 
     private void Awake() {
         if (instance == null) {
@@ -40,7 +43,8 @@ public class TurnManager : MonoBehaviour
 
     private void Start() {
         cardManager = CardManager.instance;
-        //StartCoroutine(StartGame());
+        actionPointManager = ActionPointManager.instance;
+        StartCoroutine(StartBattle());
     }
 
     public IEnumerator StartBattle() {
@@ -57,13 +61,38 @@ public class TurnManager : MonoBehaviour
 
     public void StartPlayerTurn() {
         currentTurnState = TurnState.PlayerTurn;
+        playerTurnCount++;
         if (cardManager != null && cardManager.GetHand().Count > 0) {
             cardManager.DrawCard();
         }
 
-        onPlayerTurnStart?.Invoke();
+        if (actionPointManager != null) {
+            actionPointManager.ResetActionPoints();
+        }
 
+        onPlayerTurnStart?.Invoke();
         EnablePlayerControls(true);
+    }
+
+    public void ManualEndPlayerTurn() {
+        if (currentTurnState == TurnState.PlayerTurn) {
+            EndPlayerTurn();
+        }
+    }
+
+    public bool CanPlayCard(CardData card) {
+        if (actionPointManager != null && actionPointManager.HasEnoughActionPoints(card.actionPointCost)) {
+            return true;
+        }
+        return false;
+    }
+
+    public bool UseActionPointsForCard(CardData card) {
+        if (actionPointManager == null) {
+            return true;
+        }
+
+        return actionPointManager.UseActionPoints(card.actionPointCost);
     }
 
     public void EndPlayerTurn() {
@@ -122,7 +151,7 @@ public class TurnManager : MonoBehaviour
 
     private void RefreshEnemyList() {
         activeEnemies.Clear();
-        EnemyController[] enemies = FindObjectsOfType<EnemyController>();
+        Enemy[] enemies = FindObjectsOfType<Enemy>();
 
         foreach (var enemy in enemies) {
             if (enemy.gameObject.activeInHierarchy && enemy.IsAlive()) {
@@ -148,5 +177,9 @@ public class TurnManager : MonoBehaviour
 
     public bool IsPlayerTurn() {
         return currentTurnState == TurnState.PlayerTurn;
+    }
+
+    public int GetPlayerTurnCount() {
+        return playerTurnCount;
     }
 }
