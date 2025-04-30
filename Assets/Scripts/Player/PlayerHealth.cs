@@ -76,7 +76,11 @@ public class PlayerHealth : MonoBehaviour
         Debug.Log("Player has been defeated!");
         onPlayerDefeated?.Invoke();
 
-        // TODO: Make sure turn manager finishes rest.
+        if (TurnManager.instance != null) {
+            TurnManager.instance.SetDefeatState();
+        } else {
+            Debug.LogError("TurnManager instance not found!");
+        }
     }
 
     [ContextMenu("Test Player Take Damage")]

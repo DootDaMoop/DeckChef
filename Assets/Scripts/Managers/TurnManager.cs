@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.SceneManagement;
 
 public enum TurnState {
     Start,
@@ -21,6 +22,13 @@ public class TurnManager : MonoBehaviour
     [SerializeField] private TurnState currentTurnState;
     [SerializeField] private float turnDelay = 0.5f;
     private int playerTurnCount = 0;
+
+    [Header("Victory/Defeat Settings")]
+    [SerializeField] private GameObject victoryScreen;
+    [SerializeField] private GameObject defeatScreen;
+    [SerializeField] private float endGameDelay = 2f;
+    [SerializeField] private string mainMenuSceneName = "MainMenu";
+    [SerializeField] private string dungeonSceneName = "Dungeon";
 
     [Header("Events")]
     public UnityEvent onPlayerTurnStart;
@@ -139,14 +147,43 @@ public class TurnManager : MonoBehaviour
 
     public void SetVictoryState() {
         currentTurnState = TurnState.Victory;
+        victoryScreen.SetActive(true);
+        StartCoroutine(ShowVictoryScreen());
         onVictory?.Invoke();
-        // Handle victory logic here (e.g., show victory screen, reward player, etc.)
     }
     
     public void SetDefeatState() {
         currentTurnState = TurnState.Defeat;
+        defeatScreen.SetActive(true);
+        StartCoroutine(ShowDefeatScreen());
         onDefeat?.Invoke();
-        // Handle defeat logic here (e.g., show defeat screen, reset game, etc.)
+    }
+
+    private IEnumerator ShowVictoryScreen() {
+        yield return new WaitForSeconds(endGameDelay);
+        
+        if (victoryScreen != null) {
+            victoryScreen.SetActive(true);
+        } else {
+            Debug.LogWarning("Victory screen not assigned in TurnManager.");
+        }
+    }
+
+    private IEnumerator ShowDefeatScreen() {
+        yield return new WaitForSeconds(endGameDelay);
+        
+        if (defeatScreen != null) {
+            defeatScreen.SetActive(true);
+        } else {
+            Debug.LogWarning("Defeat screen not assigned in TurnManager.");
+        }
+    }
+
+    public void ReturnToMainMenu() {
+        SceneManager.LoadScene(mainMenuSceneName);
+    }
+    public void ReturnToDungeon() {
+        SceneManager.LoadScene(dungeonSceneName);
     }
 
     private void RefreshEnemyList() {

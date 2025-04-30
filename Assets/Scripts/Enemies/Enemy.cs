@@ -195,6 +195,18 @@ public class Enemy : MonoBehaviour
 
         // TODO: Spawn Loot, Ingredients, etc.
 
+        Enemy[] remainingEnemies = FindObjectsOfType<Enemy>();
+        int aliveEnemies = 0;
+        foreach (var enemy in remainingEnemies) {
+            if (enemy.IsAlive()) {
+                aliveEnemies++;
+            }
+        }
+
+        if (aliveEnemies == 0 && TurnManager.instance != null) {
+            TurnManager.instance.SetVictoryState();
+        }
+
         Destroy(gameObject);
     }
 
