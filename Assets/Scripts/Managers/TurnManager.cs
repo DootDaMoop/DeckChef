@@ -186,7 +186,7 @@ public class TurnManager : MonoBehaviour
         SceneManager.LoadScene(dungeonSceneName);
     }
 
-    private void RefreshEnemyList() {
+    public void RefreshEnemyList() {
         activeEnemies.Clear();
         Enemy[] enemies = FindObjectsOfType<Enemy>();
 

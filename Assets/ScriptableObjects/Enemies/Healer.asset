@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 267da96b91e135e4c8fa97b191877766, type: 3}
+  m_Name: Healer
+  m_EditorClassIdentifier: 
+  enemyName: Brown Egg
+  maxHealth: 80
+  tasteAffinity: 0
+  enemySprite: {fileID: 21300000, guid: 5a14c1134f7788d4895f12da1af191a1, type: 3}
+  isBoss: 0
+  baseDamage: 10
+  enemyBehaviorType: 0
+  possibleRewards:
+  - {fileID: 11400000, guid: ccef10384254e9849a5c13b4ea080094, type: 2}
+  - {fileID: 11400000, guid: d61fc6290db76254cb0674c5dd08ef39, type: 2}
+  - {fileID: 11400000, guid: d732794bed44bff49afd17288775be59, type: 2}
+  dropChance: 0.5

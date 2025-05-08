@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Enemy : MonoBehaviour
 {
@@ -14,6 +15,11 @@ public class Enemy : MonoBehaviour
     [Header("Attack Settings")]
     [SerializeField] private int baseDamage;
     [SerializeField] private float attackDelay = 0.5f;
+
+    [Header("Enemy Behavior")]
+    [SerializeField] private EnemyData enemyData;
+    [SerializeField] private EnemyBehavior enemyBehavior;
+    [SerializeField] private int shieldAmount = 0;
 
     [Header("UI")]
     public GameObject damageTextPrefab;
@@ -33,14 +39,54 @@ public class Enemy : MonoBehaviour
     /* Neutral */{ 1.0f, 1.0f,  1.0f,  1.0f,  1.0f,  1.0f,  1.0f }
 };
 
+    private void Awake() {
+        if (enemyData != null) {
+            SetupEnemyData(enemyData);
+        }
+    }
 
     private void Start() {
         currentHealth = maxHealth;
         UpdateHealthDisplay();
+        enemyBehavior = GetComponent<EnemyBehavior>();
 
         PlayerHealth player = FindAnyObjectByType<PlayerHealth>();
         if (player != null) {
             playerTarget = player.transform;
+        }
+    }
+
+    public void SetupEnemyData(EnemyData data) {
+        enemyName = data.enemyName;
+        maxHealth = data.maxHealth;
+        currentHealth = maxHealth;
+        tasteAffinity = data.tasteAffinity;
+        baseDamage = data.baseDamage;
+        SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
+        if (spriteRenderer && data.enemySprite) {
+            spriteRenderer.sprite = data.enemySprite;
+        }
+
+        UpdateHealthDisplay();
+        AddEnemyBehavior(data.enemyBehaviorType);
+    }
+
+    private void AddEnemyBehavior(EnemyData.EnemyBehaviorType behaviorType) {
+        EnemyBehavior existingBehavior = GetComponent<EnemyBehavior>();
+        if (existingBehavior != null) {
+            Destroy(existingBehavior);
+        }
+
+        switch (behaviorType) {
+            case EnemyData.EnemyBehaviorType.Basic:
+                enemyBehavior = gameObject.AddComponent<BasicEnemyBehavior>();
+                break;
+            case EnemyData.EnemyBehaviorType.Defensive:
+                enemyBehavior = gameObject.AddComponent<DefensiveEnemyBehavior>();
+                break;
+            case EnemyData.EnemyBehaviorType.Healer:
+                enemyBehavior = gameObject.AddComponent<HealerEnemyBehavior>();
+                break;
         }
     }
 
@@ -49,8 +95,19 @@ public class Enemy : MonoBehaviour
     }
 
     public IEnumerator TakeAction() {
-        yield return StartCoroutine(AttackPlayer());
+        if (enemyBehavior != null) {
+            yield return StartCoroutine(enemyBehavior.ExecuteAttack());
+        } else {
+            yield return StartCoroutine(AttackPlayer());
+        }
     }
+
+    public void AddShield(int amount) {
+        shieldAmount += amount;
+        // TODO: Add visual indicator for shield
+        UpdateHealthDisplay();
+    }
+
 
     private IEnumerator AttackPlayer() {
         Debug.Log($"{enemyName} is attacking the player!");
@@ -142,6 +199,17 @@ public class Enemy : MonoBehaviour
 
     public void TakeDamage(int damage, TasteType tasteType = TasteType.Neutral) {
         int totalDamage = CalculateDamage(damage, tasteType);
+
+        if (shieldAmount > 0) {
+            if (shieldAmount >= totalDamage) {
+                shieldAmount -= totalDamage;
+                totalDamage = 0;
+            } else {
+                totalDamage -= shieldAmount;
+                shieldAmount = 0;
+            }
+        }
+
         currentHealth -= totalDamage;
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
 
@@ -177,6 +245,36 @@ public class Enemy : MonoBehaviour
         DamageText damageText = damageTextObject.GetComponent<DamageText>();
         if (damageText != null) {
             damageText.SetValue(damage);
+            TextMeshProUGUI textComponent = damageTextObject.GetComponent<TextMeshProUGUI>();
+            if (textComponent != null) {
+                textComponent.color = Color.red; // Red for dmg
+            }
+        } else {
+            Debug.LogError("DamageText component not found on the prefab!");
+        }
+    }
+
+    private void ShowHealingText(int healAmount) {
+        Canvas mainCanvas = FindObjectOfType<Canvas>();
+        if (mainCanvas == null || damageTextPrefab == null) {
+            Debug.LogError("No Canvas or DamageTextPrefab found in the scene!");
+            return;
+        }
+
+        GameObject healingTextObject = Instantiate(damageTextPrefab, mainCanvas.transform);
+        RectTransform rectTransform = healingTextObject.GetComponent<RectTransform>();
+        if (rectTransform != null) {
+            Vector2 screenPosition = RectTransformUtility.WorldToScreenPoint(Camera.main, transform.position + Vector3.up);
+            rectTransform.position = screenPosition;
+        }
+
+        DamageText healingText = healingTextObject.GetComponent<DamageText>();
+        if (healingText != null) {
+            healingText.SetValue(healAmount);
+            TextMeshProUGUI textComponent = healingText.GetComponent<TextMeshProUGUI>();
+            if (textComponent != null) {
+                textComponent.color = Color.green; // Green for heal
+            }
         } else {
             Debug.LogError("DamageText component not found on the prefab!");
         }
@@ -188,6 +286,23 @@ public class Enemy : MonoBehaviour
         } else {
             Debug.LogError("Health Text UI element not assigned!");
         }
+    }
+
+    public bool NeedsHealing() {
+        // Healing at 60% health
+        return currentHealth < (maxHealth * 0.6f);
+    }
+
+    public void HealDamage(int amount) {
+        int previousHealth = currentHealth;
+        currentHealth += amount;
+        currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
+
+        if (currentHealth > previousHealth){
+            ShowHealingText(currentHealth - previousHealth);
+        }
+
+        UpdateHealthDisplay();
     }
 
     private void Die() {
