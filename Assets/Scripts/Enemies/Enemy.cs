@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class Enemy : MonoBehaviour
@@ -19,11 +20,13 @@ public class Enemy : MonoBehaviour
     [Header("Enemy Behavior")]
     [SerializeField] private EnemyData enemyData;
     [SerializeField] private EnemyBehavior enemyBehavior;
-    [SerializeField] private int shieldAmount = 0;
+    public int shieldAmount = 0;
 
     [Header("UI")]
     public GameObject damageTextPrefab;
     [SerializeField] private TextMeshProUGUI healthText;
+    [Header("Events")]
+    public UnityEvent<int> onShieldChanged = new UnityEvent<int>();
 
     private Transform playerTarget;
     
@@ -104,8 +107,8 @@ public class Enemy : MonoBehaviour
 
     public void AddShield(int amount) {
         shieldAmount += amount;
+        onShieldChanged?.Invoke(shieldAmount);
         // TODO: Add visual indicator for shield
-        UpdateHealthDisplay();
     }
 
 
@@ -195,7 +198,6 @@ public class Enemy : MonoBehaviour
             }
         }
     }
-
 
     public void TakeDamage(int damage, TasteType tasteType = TasteType.Neutral) {
         int totalDamage = CalculateDamage(damage, tasteType);

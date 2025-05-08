@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3e7d11761bfd51f41bc02e62dbb758fc, type: 3}
-  m_Name: Boar
+  m_Name: Carrot (Boil)
   m_EditorClassIdentifier: 
-  cardName: Boar
+  cardName: Soft Carrot
   cardDescription: 
   actionPointCost: 1
   cardType: 0
-  cardAbilityType: 0
-  cardImage: {fileID: 21300000, guid: 28f4b2d408d32a0419e2a9e83c07209a, type: 3}
+  cardAbilityType: 1
+  cardImage: {fileID: 21300000, guid: b84ef2ec2b84c3a41b2e7c0d76967e7d, type: 3}
   _cardFrame: {fileID: 0}
-  tasteType: 4
+  tasteType: 0

@@ -108,7 +108,7 @@ MonoBehaviour:
   enemyBehavior: {fileID: 0}
   shieldAmount: 0
   damageTextPrefab: {fileID: 6043181597058240791, guid: 929b3108a9b4d8a4caa84d3b39966e70, type: 3}
-  healthText: {fileID: 4685998494926916968, guid: 929b3108a9b4d8a4caa84d3b39966e70, type: 3}
+  healthText: {fileID: 0}
 --- !u!61 &5332205175248257228
 BoxCollider2D:
   m_ObjectHideFlags: 0

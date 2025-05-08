@@ -62,18 +62,28 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction);
         if (hit.collider != null) {
             Enemy enemy = hit.collider.GetComponent<Enemy>();
-            if (enemy != null) {
-                Debug.Log("Enemy hit: " + enemy.name);
-                PlayCardOnEnemy(enemy);
-                return;
+            PlayerHealth player = hit.collider.GetComponent<PlayerHealth>();
+            CardData cardData = cardUI.GetCardData();
+
+            if (player != null) {
+                if (cardData.cardAbilityType == CardAbilityType.Heal || cardData.cardAbilityType == CardAbilityType.Defense) {
+                    Debug.Log("Player hit: " + player.name);
+                    PlayCardOnPlayer(player);
+                    return;
+                } else {
+                    Debug.Log("Cannot play this card on player.");
+                }
             }
 
-            // CardUI targetCard = hit.collider.GetComponent<CardUI>();
-            // if (targetCard != null && targetCard != cardUI) {
-            //     Debug.Log("Card hit: " + targetCard.name);
-            //     CombineWithCard(targetCard);
-            //     return;
-            // }
+            if (enemy != null) {
+                if (cardData.cardAbilityType == CardAbilityType.Damage) {
+                    Debug.Log("Enemy hit: " + enemy.name);
+                    PlayCardOnEnemy(enemy);
+                    return;
+                } else {
+                    Debug.Log("Cannot play this card on enemy.");
+                }
+            }
         }
         ReturnToHand();
     }
@@ -92,6 +102,31 @@ public class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         }
 
         enemy.ReceiveCard(cardData);
+        CardManager.instance.PlayCard(cardData);
+        Destroy(gameObject);
+    }
+
+    public void PlayCardOnPlayer(PlayerHealth player) {
+        CardData cardData = cardUI.GetCardData();
+
+        if (TurnManager.instance != null && !TurnManager.instance.CanPlayCard(cardData)) {
+            Debug.Log("Cannot play card this turn.");
+            ReturnToHand();
+            return;
+        }
+
+        if(TurnManager.instance != null) {
+            TurnManager.instance.UseActionPointsForCard(cardData);
+        }
+
+        if (cardData.cardAbilityType == CardAbilityType.Heal) {
+            int healAmount = 15;
+            player.Heal(healAmount);
+        } else if (cardData.cardAbilityType == CardAbilityType.Defense) {
+            int defenseAmount = 15;
+            player.AddShield(defenseAmount);
+        }
+
         CardManager.instance.PlayCard(cardData);
         Destroy(gameObject);
     }

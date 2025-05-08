@@ -16,6 +16,7 @@ MonoBehaviour:
   cardDescription: 
   actionPointCost: 1
   cardType: 0
+  cardAbilityType: 0
   cardImage: {fileID: 21300000, guid: e9c1764b291bcc642af1e59c0bde2031, type: 3}
-  elementType: 0
-  isConsumable: 1
+  _cardFrame: {fileID: 0}
+  tasteType: 4
