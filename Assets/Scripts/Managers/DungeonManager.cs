@@ -4,8 +4,11 @@ using UnityEngine;
 
 public class DungeonManager : MonoBehaviour
 {
+    public static bool returningFromCombat = false;
+    private static DungeonGraphData dungeonGraphDataCache = null;
+
     [Header("Dungeon Setup")]
-    private DungeonGraphData dungeonGraphData;
+    public DungeonGraphData dungeonGraphData;
     [SerializeField] private int numRooms = 6;
 
     [Header("Dungeon Node UI")]
@@ -23,9 +26,21 @@ public class DungeonManager : MonoBehaviour
     }
 
     private void Start() {
-        dungeonGraphData = ProceduralDungeonBuilder.Generate(numRooms);
-        GenerateDungeon();
+        if (returningFromCombat && dungeonGraphDataCache != null) {
+            // Returning from combat - use the saved dungeon
+            Debug.Log("Returning from combat - restoring dungeon layout");
+            dungeonGraphData = dungeonGraphDataCache;
+            GenerateDungeon();
+            returningFromCombat = false;
+        } else {
+            // New dungeon run - generate a fresh dungeon
+            Debug.Log("New dungeon run - generating new layout");
+            dungeonGraphData = ProceduralDungeonBuilder.Generate(numRooms);
+            dungeonGraphDataCache = dungeonGraphData;
+            GenerateDungeon();
+        }
     }
+
 
     private void GenerateDungeon() {
         // First, create all main nodes to ensure they get priority positioning

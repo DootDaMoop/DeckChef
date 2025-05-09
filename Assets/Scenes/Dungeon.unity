@@ -151,6 +151,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1dd33dbc3774d924dbd58509b78c806a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  dungeonGraphData: {fileID: 0}
   numRooms: 6
   nodePrefab: {fileID: 4949336275066451829, guid: 0c06384da937e3c4fb52de3a04bfa75e, type: 3}
   pathNodePrefab: {fileID: 3898336359372809331, guid: a8b3397318d5a004eb426636a00b9e66, type: 3}
@@ -389,6 +390,7 @@ GameObject:
   - component: {fileID: 1925016261}
   - component: {fileID: 1925016260}
   - component: {fileID: 1925016263}
+  - component: {fileID: 1925016264}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -514,6 +516,68 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
+--- !u!114 &1925016264
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1925016259}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fb7faeac6d0f3bf41a5d9435e0d3dc17, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  smoothSpeed: 0.125
+  offset: {x: 0, y: 0, z: -10}
+--- !u!1 &2117619967
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2117619969}
+  - component: {fileID: 2117619968}
+  m_Layer: 0
+  m_Name: DungeonNavigator
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2117619968
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2117619967}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0c04d042d5951de4e80fe11d2eb8be13, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  battleSceneName: BattleScene
+  currentNode: {fileID: 0}
+  visitedNodes: []
+  dungeonManager: {fileID: 103969795}
+--- !u!4 &2117619969
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2117619967}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.28619835, y: 0.23964989, z: -2.683842}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -522,3 +586,4 @@ SceneRoots:
   - {fileID: 1649281271}
   - {fileID: 1838149880}
   - {fileID: 103969796}
+  - {fileID: 2117619969}

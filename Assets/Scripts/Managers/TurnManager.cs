@@ -27,8 +27,8 @@ public class TurnManager : MonoBehaviour
     [SerializeField] private GameObject victoryScreen;
     [SerializeField] private GameObject defeatScreen;
     [SerializeField] private float endGameDelay = 2f;
-    [SerializeField] private string mainMenuSceneName = "MainMenu";
-    [SerializeField] private string dungeonSceneName = "Dungeon";
+    [SerializeField] private string mainMenuSceneName = "MainMenuScene";
+    [SerializeField] private string dungeonSceneName = "DungeonScene";
 
     [Header("Events")]
     public UnityEvent onPlayerTurnStart;
@@ -182,8 +182,22 @@ public class TurnManager : MonoBehaviour
     public void ReturnToMainMenu() {
         SceneManager.LoadScene(mainMenuSceneName);
     }
+
     public void ReturnToDungeon() {
+        DungeonManager.returningFromCombat = true;
         SceneManager.LoadScene(dungeonSceneName);
+        StartCoroutine(NotifyDungeonNavigatorAfterLoad(true));
+    }
+
+    private IEnumerator NotifyDungeonNavigatorAfterLoad(bool victorious) {
+        yield return new WaitForEndOfFrame();
+
+        DungeonNavigator dungeonNavigator = FindObjectOfType<DungeonNavigator>();
+        if (dungeonNavigator != null) {
+            dungeonNavigator.ReturnFromCombat(victorious);
+        } else {
+            Debug.LogError("DungeonNavigator not found in the scene!");
+        }
     }
 
     public void RefreshEnemyList() {
